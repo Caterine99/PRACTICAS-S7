@@ -1,0 +1,227 @@
+---
+title: "Intervalos de confianza"
+author: "Caterine Melissa Guerrero España"
+date: "2022-09-13"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Introducción
+
+el objetivo mediante la **intervalos de confianza** o **estimación confidencial** es la determinación de dos valores $\theta_{1}^{*}$ y $\theta_{2}^{*}$ que verifiquen  $\theta_{1}^{*} \leq\theta_{2}^{*}$, tales que, al constituirse en intervalo $\theta_{1}^{*} ,\theta_{2}^{*}$ contengan, con una probabilidad prefijada, el verdadero valor del parámetro que deseamos estimar. De forma gráfica, un intervalo de confianza puede representarse del siguiente modo:
+
+
+# Supuesto Práctico 1
+Con el fin de estudiar el número medio de flexiones continuadas que pueden realizar los alumnos, un profesor de educación física somete a 75 de ellos, elegidos aleatoriamente, a una prueba. El número de flexiones realizado por cada alumno, así como su sexo y si realizan o no deporte se muestran en el fichero Flexiones.txt.
+
+Se sabe que el número de flexiones se distribuye según una Normal de varianza poblacional 7.5. ¿Determinar el intervalo de confianza a un nivel de confianza del 95% para el número medio de flexiones?
+
+**Solución**
+En primer lugar debemos importar, en R, los datos que contienen el número de flexiones realizadas por cada alumno. Para ello, utilizamos la orden read.table
+```{r}
+datos<-read.table("Flexiones.txt", header=TRUE)
+datos
+```
+
+A continuación, introducimos en R los datos relativos al nivel de significación y la varianza poblacional de la variable que proporciona el enunciado.
+
+```{r}
+alpha<-0.05
+varianza<-0.75
+```
+
+Calculamos por separado cada uno de los elementos restantes que necesitamos para obtener el intervalo de confianza.
+```{r}
+n<-nrow(datos)
+media<-mean(datos$Flexiones)
+cuantil<-qnorm(1-alpha/2)
+
+```
+
+Por último, calculamos los extremos inferior y superior del intervalo de acuerdo a la expresión que se vio anteriormente:
+
+Por tanto:
+```{r}
+lim_inf<-media-cuantil*sqrt(varianza)/sqrt(n)
+lim_inf
+
+lim_sup<-media+cuantil*sqrt(varianza)/sqrt(n)
+lim_sup
+```
+
+Por lo que el intervalo de confianza que buscamos es (49.91067, 50.30266)
+
+
+# Intervalo de confianza para la media en una población normal con varianza desconocida
+
+Supongamos, en este caso, que la varianza poblacional de la variable de interés es desconocida. Nuestro objetivo sigue siendo el cálculo de un intervalo de confianza para la media de dicha variable.
+
+# Supuesto Práctico 2
+
+Considerando nuevamente el conjunto de datos que se ha presentado en el supuesto práctico 1, relativo a las flexiones de los alumnos. Calcular un intervalo de confianza a un nivel de confianza del 98% para el número medio de flexiones. Suponer en este caso que el número de flexiones se distribuye según una distribución Normal de varianza desconocida.
+```{r}
+t.test(datos$Flexiones, conf.level=0.98)
+```
+
+De toda la información que devuelve la función t.test, sólo nos interesa la relativa al intervalo de confianza
+
+98 percentconfidenceinterval:
+48.46512 51.74822
+
+Por lo tanto, el intervalo de confianza para el número medio de flexiones a un nivel de confianza del 98% es (48.46512, 51.74822).
+
+
+Resolvamos el mismo ejemplo pero cuando el enunciado nos muestra la media (50.11),  la cuasidesviación típica (5.98) y el tamaño muestral (75). Pero no proporciona los datos.
+
+**Solución**
+Al no disponer de un vector numérico con los valores de la variable de interés, para resolver el ejemplo recurriremos a utilizar la expresión del intervalo de confianza para este caso
+```{r}
+alpha<-0.2
+n=75
+cuasi<-5.98
+media<-50.11
+
+```
+
+```{r}
+cuantil<-qt((1-alpha/2),8,lower.tail = T)
+lim_inf<-media-cuantil*cuasi/sqrt(n)
+lim_inf
+lim_sup<-media+cuantil*cuasi/sqrt(n)
+lim_sup
+```
+
+Por lo tanto, hay un 98% de confianza de que el intervalo [49.14548 ,  51.07452 contenga el número medio de flexiones
+
+# Supuesto Práctico 3
+A partir del conjunto de datos relativo al número de flexiones y el sexo de los alumnos, obtener un intervalo de confianza al 95% para la proporción de alumnos en la población. Del mismo modo, calcular un intervalo de confianza al 90% para la proporción de alumnas.
+
+**Solución**
+Comenzaremos con el cálculo del intervalo de confianza para los chicos. Para realizar la llamada a la función prop.test necesitamos conocer, además del nivel de confianza, que viene indicado en el enunciado, el número de alumnos varones y el número total de estudiantes en la muestra. Para ello utilizamos la función, de R, table.
+```{r}
+table(datos$Sexo)
+```
+
+e los 75 estudiantes que conforman la muestra, 43 son chicos. Por lo que la llamada a prop.test sería la siguiente:
+```{r}
+prop.test(43,75)
+```
+
+Como el nivel de confianza para este intervalo es el 95% no ha sido necesario incluir el argumento conf.level en la llamada a prop.test, puesto que este es el nivel de confianza por defecto.
+
+De nuevo, los resultados de la función incluyen mucha más información aparte de la relativa al intervalo de confianza. Por ahora, nos centraremos únicamente en esta última.
+
+Por lo que el intervalo de confianza, a un nivel de confianza del 95% para la proporción de alumnos varones en la población es (0.4539882, 0.6851173)
+
+Repitamos el procedimiento para obtener ahora un intervalo de confianza para la proporción de chicas. En este caso, tenemos que tener en cuenta que el número de chicas en la muestra era 32.
+```{r}
+prop.test(23,75,conf.level = 0.90)
+```
+
+
+Centrándonos en la parte de la salida que incluye el intervalo de confianza
+
+90 percentconfidenceinterval:
+0.2211717 0.4066284
+
+Podemos concluir que el intervalo de confianza, considerando un nivel de confianza del 90%, para la proporción de chicas en la población es (0.2211717, 0.4066284).
+
+**Resolvamos este ejercicio utilizando la expresión del intervalo de confianza para la proporción**
+
+**Solución**
+Intervalo de confianza, a un nivel de confianza del 95% para la proporción de alumnos varones en la población
+```{r}
+alpha<-0.02
+n=75
+p=32/75
+cuantil<-qnorm(1-alpha/2)
+lim_inf<-p-cuantil*sqrt(p*(1-p))/sqrt(n)
+lim_inf
+lim_sup<-p+cuantil*sqrt(p*(1-p))/sqrt(n)
+lim_sup
+```
+
+Por lo que el intervalo de confianza, a un nivel de confianza del 90%, para la proporción de chicas en la población es (0.3147318, 0.5386015).
+
+# Intervalo de confianza para la diferencia de medias en dos poblaciones normales independientes
+
+falta texo
+
+# Intervalo de confianza para el cociente de varianzas en dos poblaciones normales independientes
+
+falta texto
+
+# Supuesto Práctico 4
+Continuando con los datos relativos a las flexiones realizadas por un grupo de estudiantes y asumiendo que el número de flexiones que realizan los chicos y las que realizan las chicas se distribuyen según sendas distribuciones normales con medias y varianzas desconocidas. Calcular un intervalo de confianza a un nivel de confianza del 95% para el cociente de varianzas en ambas poblaciones. ¿Puede asumirse que ambas varianzas son iguales?
+
+**Solución**
+En primer lugar determinamos el intervalo de confianza para el cociente de varianzas, para ello utilizamos la función var.test. Lo primero que tenemos que hacer para aplicar la función var.test es separar en dos variables los datos relativos a las flexiones realizadas por los chicos y por las chicas.
+
+```{r}
+Flexiones.chicos<-datos$Flexiones[datos$Sexo=="H"]
+Flexiones.chicas<-datos$Flexiones[datos$Sexo=="M"]
+Flexiones.chicas
+Flexiones.chicos
+```
+A continuación, utilizamos la función var.test tal y como se indica a continuación:
+```{r}
+var.test(Flexiones.chicos,Flexiones.chicas)
+```
+
+
+Analizando la información relativa al intervalo de confianza que se incluye en la salida de var.test, podemos afirmar que el intervalo de confianza a un nivel de confianza del 95% para el cociente de las varianzas de las dos distribuciones es (0.4415, 1.6765). Este intervalo de confianza contiene al valor 1, por lo que se puede suponer que las varianzas de las dos distribuciones son idénticas.
+
+Una vez se ha determinado la igualdad (o desigualdad) de las varianzas de ambas distribuciones, procedemos a calcular el intervalo de confianza para la diferencia de las medias propiamente dicho.
+
+# a) Intervalo de confianza para la diferencia de medias en dos poblaciones normales independientes cuando las varianzas poblacionales son desconocidas pero supuestas iguales
+
+Si la varianzas poblacionales son desconocidas pero supuestas iguales, se parte de la variable aleatoria
+
+
+# b) Intervalo de confianza para la diferencia de medias en dos poblaciones normales independientes cuando las varianzas poblacionales son desconocidas, distintas y tamaños muestrales grandes
+
+Si las varianzas de las poblaciones son desconocidas y, además, distintas y tamaños muestrales grandes, se sigue un procedimiento similar al que acabamos de describir en el caso de igualdad de varianzas para la obtención del intervalo de confianza, partiendo de una variable aleatoria.
+
+#Supuesto Práctico 5
+En vista de los resultados obtenidos en el supuesto práctico 4, y suponiendo que el número de flexiones que realizan los alumnos y las alumnas se distribuyen de acuerdo a variables normales de medias y varianzas desconocidas, obtener un intervalo de confianza al 95% para la diferencia del número medio de flexiones entre chicos y chicas. ¿Puede suponerse que el número medio de flexiones que realizan los chicos y las chicas es igual?
+
+**Solución**
+Dado que en el supuesto práctico 4 se concluyó la igualdad de las varianzas del número de flexiones que hacen chicos y chicas, debemos establecer a TRUE el valor del parámetro var.equal cuando realicemos la llamada a la función t.test.
+
+```{r}
+t.test(Flexiones.chicos,Flexiones.chicas, var.equal = TRUE)
+```
+
+
+Atendiendo la información sobre el intervalo de confianza que se incluye entre los resultados
+
+95 percentconfidenceinterval:
+-2.887271  2.714306
+
+Se puede afirmar que el intervalo de confianza a un 95% de confianza para la diferencia de las medias del número de flexiones que hacen chicos y chicas es (-2.8872, 2.7143). Como el 0 está dentro de este intervalo, se puede decir que ambas medias son idénticas.
+
+# Intervalo de confianza para la diferencia de medias en dos poblaciones normales relacionadas
+
+# Supuesto Práctico 6
+Para estudiar los efectos de un programa de control de peso, el profesor de educación física selecciona aleatoriamente a 6 alumnos y se les toma nota de sus pesos antes y después de pasar por el programa.
+
+falta tabla
+
+Construir un intervalo de confianza a un 95% de confianza para la diferencia de medias de los pesos antes y después de seguir el programa.
+
+**Solución**
+Como puede observarse, los datos vienen por parejas: peso antes y después, dos datos por individuo. Parece lógico que los datos se encuentren relacionados entre sí.
+
+En primer lugar, vamos a introducir los datos en R. Para ello definimos dos vectores
+```{r}
+Antes<-c(72.0, 73.5, 70.0, 71.5, 76.0, 80.5)
+Despues<-c(73.0, 74.5, 74.0, 74.5, 75.0, 82.0)
+```
+
+A partir de estos datos, vamos a aplicar la función t.test, para obtener el intervalo de confianza que buscamos.
+```{r}
+t.test(Antes,Despues,paired=TRUE)
+```
