@@ -225,3 +225,5 @@ A partir de estos datos, vamos a aplicar la función t.test, para obtener el int
 ```{r}
 t.test(Antes,Despues,paired=TRUE)
 ```
+
+continuación
