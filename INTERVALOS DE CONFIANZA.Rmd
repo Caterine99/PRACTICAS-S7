@@ -226,4 +226,134 @@ A partir de estos datos, vamos a aplicar la función t.test, para obtener el int
 t.test(Antes,Despues,paired=TRUE)
 ```
 
-continuación
+# Supuesto Práctico 7
+Retomando el conjunto de datos relativo a las flexiones que realizan un grupo de estudiantes, calcular un intervalo de confianza al 92% para la diferencia entre la proporción de alumnos y de alumnas que practican deporte. ¿Puede considerarse que ambas proporciones son iguales?
+
+**Solución**
+En primer lugar, sino tenemos importado el fichero de datos, debemos importarlo. Para ello, utilizamos la orden read.table
+```{r}
+table(datos$Sexo,datos$Deporte)
+```
+
+En total, 11 de los 43 y 19 de las 32 chicas muestreados practican deporte. Vamos a crear dos vectores con esta información:
+
+vector_Deport: Total de chicos y chicas que practican deporte
+vector_Sexo: Total de chicos y chicas en la muestra.
+```{r}
+vector_Deporte<-c(11,19)
+vector_Deporte
+
+vector_Sexo<-c(43,32)
+vector_Sexo
+```
+
+Es muy importante que los valores se introduzcan en el mismo orden en los dos vectores. A continuación podemos utilizar la función prop.test con estos dos vectores como argumentos.
+```{r}
+prop.test(vector_Deporte,vector_Sexo, conf.level = 0.92)
+```
+
+
+Según la salida de la función prop.test, el intervalo de confianza al 92% de confianza es (-0.5566, -0.1191). El 0 no está dentro de este intervalo, por lo que podemos concluir que las proporciones de chicos y chicas que hacen deporte no coinciden.
+
+# Ejercicios
+
+## Ejercicio 1
+
+Un fabricante diseña un experimento para estimar la tensión de ruptura media de una fibra. Para ello, observa las tensiones de ruptura, en libras, de 16 hilos de dicha fibra seleccionados aleatoriamente. Las tensiones son 20.8, 20.6, 21.0, 20.9, 19.9, 20.2, 19.8, 19.6, 20.9, 21.1, 20.4, 20.6, 19.7, 19.6, 20.3, 20.7.
+
+Construir un intervalo de confianza al 98% de confianza:
+
+a)Si la tensión de ruptura se distribuye según una normal de desviación típica $\sigma=0.45$ libras
+
+b)Si la tensión de ruptura se distribuye según una normal de desviación típica desconocida.
+
+**solución**
+
+En primer lugar, introducimos, en un vector, los datos de las 16 tensiones observadas y en segundo lugar introducimos el dato relativo al nivel de significación
+```{r}
+tensiones<- c(20.8, 20.6, 21.0, 20.9, 19.9, 20.2, 19.8, 19.6, 20.9, 21.1, 20.4, 20.6, + 19.7, 19.6, 20.3, 20.7)
+alpha<-0.02
+
+
+```
+
+a)Si la tensión de ruptura se distribuye según una normal de desviación típica 
+```{r}
+n<-length(tensiones)
+media<-mean(tensiones)
+cuantil<-qnorm(1-alpha/2)
+```
+
+Introducimos el dato de la desviación típica
+```{r}
+desv_tipica<-0.45
+```
+
+A continuación calculamos el límite inferior y superior del intervalo pedido.
+```{r}
+lim_inf<-media-cuantil*desv_tipica/sqrt(n)
+lim_inf
+lim_sup<-media+cuantil*desv_tipica/sqrt(n)
+lim_sup
+```
+
+Por lo que el intervalo de confianza para la tensión media de la fibra que buscamos es (20.11954, 20.64296).
+
+b)Si la tensión de ruptura se distribuye según una normal de desviación típica desconocida
+
+Hay que obtener un intervalo de confianza cuando la desviación típica no se conoce. Para ello, usamos la función t.test
+```{r}
+t.test(tensiones,conf.level = 0.98)
+```
+En este segundo caso, el intervalo de confianza para la tensión media de la fibra, al 98% de confianza, es (20.04092, 20.72158).
+
+## Ejercicio 2
+
+En una muestra de 40 alumnos, 25 de ellos están conformes con las decisiones que ha tomado el profesor con respecto a las calificaciones. Calcular un intervalo de confianza, a un 95% de confianza para la proporción de alumnos conforme con el profesor.
+
+**Solución**
+```{r}
+prop.test(25,40)
+```
+
+El intervalo de confianza para la proporcioón poblacional de alumnos conforme al 95% de confianza es (0.4580964, 0.7682594)
+
+## Ejercicio 3
+Una agencia estatal vigila la calidad del agua para la cría de peces. Esta agencia desea comparar la cantidad media de cierta sustancia tóxica en dos ríos contaminados por desperdicios industriales. Se seleccionaron 11 muestras en un río y 8 muestras en el otro.
+
+Si las dos poblaciones son normales e independientes, calcular un intervalo de confianza con nivel de confianza del 90% para la diferencia de las medias poblacionales de cantidad de sustancia tóxica.
+
+**Solución**
+```{r}
+Rio1<-c(10,10,12,13,9,8,12,12,10,14,8)
+Rio2<-c(11,8,9,7,10,8,8,10)
+```
+
+```{r}
+var.test(Rio1,Rio2,conf.level=0.90)
+```
+
+Según los resultados de var.test, el intervalo de confianza al 90% de confianza para el cociente de las varianzas de la variable en ambos ríos es (0.6007, 6.8498),  que contiene al 1. Por tanto, podemos asumir que ambas varianzas son iguales en ambos ríos.
+
+Por lo tanto, tenemos que obtener un intervalo de confianza para la diferencia de medias de dos poblaciones cuando las varianzas de ambas poblaciones son iguales. Para ello, utilizamos la función t.test.
+```{r}
+t.test(Rio1,Rio2,var.equal = TRUE,conf.level = 0.90)
+```
+
+
+## Ejercicio 4
+Una empresa farmacéutica está interesada en la investigación preliminar de un nuevo medicamento que parece tener propiedades reductoras del colesterol en la sangre. A tal fin se toma una muestra al azar de 6 personas, y se determina el contenido en colesterol antes y después del tratamiento.
+
+Calcular un intervalo de confianza, al 96% de confianza para la diferencia del nivel de colesterol medio antes y después del tratamiento.
+
+**Solución**
+```{r}
+Antes<-c(217,252,229,200,209,213)
+Despues<-c(8209,241,230,208,211)
+
+```
+
+```{r}
+#t.test(Antes, Despues, paired = TRUE, conf.level = 0.96)
+```
+
