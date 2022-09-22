@@ -349,11 +349,122 @@ Calcular un intervalo de confianza, al 96% de confianza para la diferencia del n
 **Solución**
 ```{r}
 Antes<-c(217,252,229,200,209,213)
-Despues<-c(8209,241,230,208,211)
+Despues<-c(209,241,230,208,206,211)
 
 ```
 
 ```{r}
-#t.test(Antes, Despues, paired = TRUE, conf.level = 0.96)
+t.test(Antes, Despues, paired = TRUE, conf.level = 0.96)
+```
+
+## Ejercicio 5
+
+Una determinada empresa quiere saber si su nuevo producto tendrá más aceptación en la población adulta o entre los jóvenes. Para ello, considera una muestra aleatoria de 400 adultos y 600 jóvenes, observando que sólo a 100 adultos y 300 jóvenes les había gustado su producto. Construir un intervalo de confianza al 99% de confianza para la diferencia de proporciones de adultos y jóvenes a los que les gusta el producto. ¿Puede suponerse que el producto gusta por igual en adultos y jóvenes?
+
+**Solución** 
+
+```{r}
+Adul_Jov_Gusta_Producto<-c(100,300)
+Adul_Jov_Total<-c(400,600)
+```
+
+Una vez hecho esto, llamamos a la función prop.test, indicando el nivel de confianza adecuado.
+```{r}
+prop.test(Adul_Jov_Gusta_Producto,Adul_Jov_Total,conf.level = 0.99)
+```
+
+## Ejercicio 6
+En una experiencia genética se extraen 20 moscas de una caja experimental y se mide la longitud del ala de cada una. Se obtuvieron los siguientes valores:
+
+93, 90, 97, 90, 93, 91, 96, 94, 91, 91, 88, 93, 95, 91, 89, 92, 87, 88, 90, 86
+
+Suponiendo que la longitud del ala sigue una distribución Normal.  Construir un intervalo de confianza al 99% de confianza para
+
+
+```{r}
+longitud<-c(93, 90, 97, 90, 93, 91, 96, 94, 91, 91, 88, 93, 95, 91, 89, 92, 87, 88, 90, 86)
+alpha<-0.01
+```
+
+a) La media $\mu$
+```{r}
+t.test(longitud)
+```
+
+b) La varianza $\sigma_{2}$
+```{r}
+n<-length(longitud)
+varianza<-var(longitud)
+L1<-(n-1)*varianza/qchisq(1-alpha/2,n-1)
+L2<-(n-1)*varianza/qchisq(alpha/2,n-1)
+IC<-c(L1,L2)
+IC
+```
+
+# Ejercicios Propuestos
+
+## Ejercicio 1
+Se desea estudiar si la longitud del pico en una especie de loro es distinta entre los machos y las hembras. Para ello se selecciona una muestra de 14 machos y 12 hembras, cuyos resultados, expresados en milímetros
+```{r}
+Machos<-c(57,58,60,58,61,62,61,59,57,63,58,55,59,60)
+Hembras<-c(55,56,58,54,53,55,57,53,54,54,55,55)
+```
+
+1.Obtener un intervalo de confianza a un nivel del 99%
+```{r}
+#para la longitud media del pico en los machos
+t.test(Machos,conf.level = 0.99)
+
+#para la longitud media del pico en las hembras
+t.test(Hembras,conf.level = 0.99)
+```
+
+2.Obtener un intervalo de confianza a un nivel del 99% para la diferencia entre la longitud media del pico de los machos y de las hembras.
+```{r}
+var.test(Machos,Hembras,conf.level = 0.99)
+
+t.test(Machos,Hembras, var.equal = TRUE, conf.level = 0.90)
+```
+
+## Ejercicio 2
+
+Para comprobar si un determinado pienso puede mejorar la producción de lana de las ovejas, se selecciona una muestra aleatoria simple de 10 ovejas para ser alimentadas con dicho pienso. En la tabla siguiente se muestra el peso (en Kgr) de la lana producida antes y después del experimento
+
+```{r}
+antes<-c(10,8,7,5,9,12,10,9,8,8)
+despues<-c(10,9,9,7,10,12,11,12,11,10)
+
+```
+
+Obtener un intervalo de confianza al 98% para la diferencia de los pesos medios de la lana producida antes y después del experimento
+```{r}
+t.test(antes,despues,paired = TRUE, conf.level = 0.98)
+```
+
+## Ejercicio 3
+En una muestra aleatoria de 900 personas con pelo oscuro se encontró que 150 de ellas tenían los ojos azules. Construir un intervalo de confianza al 95% para la proporción de individuos que teniendo pelo oscuro en la población posee ojos azules. ¿Son compatibles estos resultados con la suposición de que dicha proporción vale 1/4)
+```{r}
+prop.test(150,900)
+```
+
+## Ejercicio 4
+En una piscifactoría se desea comparar el porcentaje de peces adultos que miden menos de 20 cm con los que miden más de 40 cm. Para ello, se toma una muestra de 200 peces observando que 40 de ellos miden menos de 20 cm y una muestra de 200 peces de los que 57 miden más de 40 cm. Halla un intervalo de confianza para la diferencia de proporciones al nivel de confianza del 0.95. Realizarlo también para un nivel de confianza del 99%.
+```{r}
+min_20<-c(40,143)
+peces<-c(200,200)
+prop.test(min_20,peces)
+prop.test(min_20,peces,conf.level = 0.99)
+```
+
+```{r}
+min_40<-c(160,57)
+prop.test(min_40,peces)
+prop.test(min_40,peces,conf.level = 0.99)
+```
+
+```{r}
+min_comp<-c(40,57)
+prop.test(min_comp,peces)
+prop.test(min_comp,peces,conf.level = 0.99)
 ```
 
